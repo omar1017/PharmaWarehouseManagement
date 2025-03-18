@@ -1,12 +1,8 @@
-﻿using AlkinanaPharmaManagment.Domain.Entities.Customers;
-using AlkinanaPharmaManagment.Domain.Repositories;
+﻿using AlkinanaPharmaManagment.Application.Carts.Get;
+using AlkinanaPharmaManagment.Application.Customers;
+using AlkinanaPharmaManagment.Domain.Entities.Customers;
 using AlkinanaPharmaManagment.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlkinanaPharmaManagment.Infrastructure.Repositoryies
 {
@@ -33,9 +29,18 @@ namespace AlkinanaPharmaManagment.Infrastructure.Repositoryies
             return await context.Customers.ToListAsync();
         }
 
-        public async Task<Customer> GetAsync(CustomerId customerId)
+        public async Task<CustomerResponse> GetAsync(CustomerId customerId)
         {
-            return await context.Customers.FirstOrDefaultAsync(c => c.CustomerId == customerId);
+            var customer = await context.Customers.AsNoTracking().FirstOrDefaultAsync(c => c.CustomerId == customerId);
+
+            return new CustomerResponse
+            {
+                Id = customer.CustomerId,
+                Name = customer.customerName,
+                PharmaName = customer.customerName,
+                Address = customer.address,
+                PhoneNumber = customer.Phone
+            };
         }
 
         public async Task<List<Customer>> GetCustomersByCity(string city)

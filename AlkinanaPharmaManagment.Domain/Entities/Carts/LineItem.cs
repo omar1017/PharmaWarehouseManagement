@@ -9,21 +9,21 @@ namespace AlkinanaPharmaManagment.Domain.Entities
     { 
         public LineItemId lineItemId { get; private set; }
         public ProductId productId { get; private set; }
+        public Product Product { get; private set; }
         public CartId cartId {get; private set; }
-        public uint quantity {get; private set; }
-        public Price price {get; private set; }
+        public Cart Cart { get; private set; }
+        public int quantity {get; private set; }
+        public bool isFulfilled { get; set; } = false;
         public LineItem(
             LineItemId lineItemId,
             ProductId productId,
             CartId cartId,
-            Price price,
-            uint quantity
+            int quantity
             )
         {
             this.lineItemId = lineItemId;
             this.productId = productId;
             this.cartId = cartId;
-            this.price = price;
             this.quantity = quantity;
         }
         

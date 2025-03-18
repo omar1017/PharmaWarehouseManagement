@@ -1,11 +1,5 @@
 ﻿using AlkinanaPharmaManagment.Application.Abstractions.Messaging;
-using AlkinanaPharmaManagment.Domain.Repositories;
-using AlkinanaPharmaManagment.Shared.Abstraction.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AlkinanaPharmaManagment.Application.Carts.Get;
 
 namespace AlkinanaPharmaManagment.Application.Customers.Get
 {
@@ -15,9 +9,9 @@ namespace AlkinanaPharmaManagment.Application.Customers.Get
         {
             var customers = customerRepository.GetAllAsync().Result.Select(c => new CustomerResponse
             {
-                CustomerId = c.CustomerId,
-                CustomerName = c.customerName,
-                Pharma = c.pharma,
+                Id = c.CustomerId,
+                Name = c.customerName,
+                PharmaName = c.pharma,
                 Address = c.address
             }).ToList();
 

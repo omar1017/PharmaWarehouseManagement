@@ -15,7 +15,6 @@ namespace AlkinanaPharmaManagment.Application.Products.Create
             RuleFor(c => c.Product.name).NotNull();
             RuleFor(c => c.Product.description).NotNull();
             RuleFor(c => c.Product.price).NotNull();
-            RuleFor(c => c.Product.image).NotNull();
             RuleFor(c => c.Product.supplier).NotNull();
             RuleFor(c => c.Product.companyName).NotNull();
         }

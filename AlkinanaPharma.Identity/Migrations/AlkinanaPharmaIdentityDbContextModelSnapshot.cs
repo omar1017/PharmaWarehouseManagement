@@ -99,7 +99,7 @@ namespace AlkinanaPharma.Identity.Migrations
                         {
                             Id = "6a1508f2-95ea-4496-ab0a-06291adc542f",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b1584842-bda5-436c-a5e6-12fec221862f",
+                            ConcurrencyStamp = "bb03ef56-63c2-4321-ab16-7b6ab7aef1e3",
                             Email = "admin@localhost.com",
                             EmailConfirmed = true,
                             FirstName = "System",
@@ -107,9 +107,9 @@ namespace AlkinanaPharma.Identity.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@LOCALHOST.COM",
                             NormalizedUserName = "ADMIN@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAENLfaTdrSazYFmVNDKN0ohs0laeDwX9AEpUnF0rt2kvnE2xdbetmmOHsGb4nicb7dg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEcKN/0v28ePtLIuAtikPH7/PWOEoE6rrwllSHpXHojlK/zWHuMi38DuHhd+I4lckA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d36d3083-bddc-4460-9db0-6334a56da991",
+                            SecurityStamp = "0bfb5a12-2539-4bf4-89b5-9e5f84b80c94",
                             TwoFactorEnabled = false,
                             UserName = "admin@localhost.com"
                         },
@@ -117,7 +117,7 @@ namespace AlkinanaPharma.Identity.Migrations
                         {
                             Id = "f2d89605-cf8a-4aaa-a1fc-4d454ea568ff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f814fb88-284c-484a-ae99-3b85a468c39d",
+                            ConcurrencyStamp = "aeb6b633-fb53-46f1-bada-40065a494d78",
                             Email = "user@localhost.com",
                             EmailConfirmed = true,
                             FirstName = "System",
@@ -125,12 +125,49 @@ namespace AlkinanaPharma.Identity.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "USER@LOCALHOST.COM",
                             NormalizedUserName = "USER@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPF+TZdvxfMashT3hn8MtvpudcAO6p8JodZZFUvdA/RECZk/cCLP1GjaI22OJMhjAA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKMAhO5/Iz00GXo/gDxmiSr2Uio262KK06DTixpDbSQD9P8qxfA4v0ljqATw714Q5Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e05c69e8-ef11-4d64-bb73-f3e49a3d8b05",
+                            SecurityStamp = "38a38a54-a72c-4ff8-a427-0a6d3c2711d0",
                             TwoFactorEnabled = false,
                             UserName = "user@localhost.com"
                         });
+                });
+
+            modelBuilder.Entity("AlkinanaPharma.Identity.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("AddedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -290,6 +327,17 @@ namespace AlkinanaPharma.Identity.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("AlkinanaPharma.Identity.Models.RefreshToken", b =>
+                {
+                    b.HasOne("AlkinanaPharma.Identity.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

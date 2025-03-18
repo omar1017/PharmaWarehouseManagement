@@ -46,6 +46,9 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("isFulfilled")
+                        .HasColumnType("bit");
+
                     b.HasKey("CartId");
 
                     b.HasIndex("CustomerId");
@@ -79,6 +82,21 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Images.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.LineItem", b =>
                 {
                     b.Property<Guid>("lineItemId")
@@ -87,14 +105,14 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.Property<Guid>("cartId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("price")
-                        .HasColumnType("float");
+                    b.Property<bool>("isFulfilled")
+                        .HasColumnType("bit");
 
                     b.Property<Guid>("productId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("quantity")
-                        .HasColumnType("bigint");
+                    b.Property<int>("quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("lineItemId");
 
@@ -117,6 +135,9 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -126,24 +147,42 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PublicPrice")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("SupplierId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("WarningId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("ProductId");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("SupplierId");
+
+                    b.HasIndex("WarningId");
 
                     b.ToTable("Products");
                 });
 
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Suppliers.Supplier", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("SupplierId");
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -160,18 +199,40 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.HasKey("SupplierId");
 
                     b.ToTable("Suppliers");
                 });
 
+            modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Warnings.Warning", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
+
+                    b.ToTable("Warnings");
+                });
+
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Cart", b =>
                 {
-                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Customers.Customer", null)
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Customers.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Customers.Customer", b =>
@@ -263,24 +324,38 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
 
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.LineItem", b =>
                 {
-                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Cart", null)
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Cart", "Cart")
                         .WithMany("lineItems")
                         .HasForeignKey("cartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Product", null)
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("productId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Product", b =>
                 {
-                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Suppliers.Supplier", null)
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Images.Image", "Image")
                         .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Suppliers.Supplier", "Supplier")
+                        .WithMany("Products")
                         .HasForeignKey("SupplierId");
+
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Warnings.Warning", "Warning")
+                        .WithMany()
+                        .HasForeignKey("WarningId");
 
                     b.OwnsOne("AlkinanaPharmaManagment.Domain.Entities.Products.ValueObject.CompanyName", "companyName", b1 =>
                         {
@@ -353,24 +428,6 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                                 .HasForeignKey("ProductId");
                         });
 
-                    b.OwnsOne("AlkinanaPharmaManagment.Domain.ValueObject.ProductImage", "image", b1 =>
-                        {
-                            b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)")
-                                .HasColumnName("Image");
-
-                            b1.HasKey("ProductId");
-
-                            b1.ToTable("Products");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProductId");
-                        });
-
                     b.OwnsOne("AlkinanaPharmaManagment.Domain.ValueObject.ProductName", "name", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
@@ -389,13 +446,16 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                                 .HasForeignKey("ProductId");
                         });
 
+                    b.Navigation("Image");
+
+                    b.Navigation("Supplier");
+
+                    b.Navigation("Warning");
+
                     b.Navigation("companyName")
                         .IsRequired();
 
                     b.Navigation("description")
-                        .IsRequired();
-
-                    b.Navigation("image")
                         .IsRequired();
 
                     b.Navigation("name")
@@ -536,9 +596,25 @@ namespace AlkinanaPharmaManagment.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Warnings.Warning", b =>
+                {
+                    b.HasOne("AlkinanaPharmaManagment.Domain.Entities.Images.Image", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Image");
+                });
+
             modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Cart", b =>
                 {
                     b.Navigation("lineItems");
+                });
+
+            modelBuilder.Entity("AlkinanaPharmaManagment.Domain.Entities.Suppliers.Supplier", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

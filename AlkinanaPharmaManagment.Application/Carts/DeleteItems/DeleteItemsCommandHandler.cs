@@ -1,12 +1,5 @@
 ﻿using AlkinanaPharmaManagment.Application.Abstractions.Messaging;
-using AlkinanaPharmaManagment.Domain.Repositories;
-using AlkinanaPharmaManagment.Shared.Abstraction.Domain;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AlkinanaPharmaManagment.Application.Carts.DeleteItems
 {

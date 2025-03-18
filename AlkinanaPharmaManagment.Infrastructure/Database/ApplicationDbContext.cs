@@ -1,6 +1,8 @@
 ﻿using AlkinanaPharmaManagment.Domain.Entities;
 using AlkinanaPharmaManagment.Domain.Entities.Customers;
+using AlkinanaPharmaManagment.Domain.Entities.Images;
 using AlkinanaPharmaManagment.Domain.Entities.Suppliers;
+using AlkinanaPharmaManagment.Domain.Entities.Warnings;
 using AlkinanaPharmaManagment.Shared.Abstraction.Domain;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +28,8 @@ public sealed class ApplicationDbContext :DbContext
     public DbSet<Customer> Customers { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
+    public DbSet<Image> Images { get; set; }
+    public DbSet<Warning> Warnings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

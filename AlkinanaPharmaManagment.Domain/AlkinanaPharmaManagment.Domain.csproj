@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\Suppliers\Events\" />
     <Folder Include="Entities\Suppliers\Exceptions\" />
   </ItemGroup>
 

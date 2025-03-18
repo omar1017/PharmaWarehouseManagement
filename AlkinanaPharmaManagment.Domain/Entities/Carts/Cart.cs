@@ -11,7 +11,10 @@ namespace AlkinanaPharmaManagment.Domain.Entities
     {
         public CartId CartId { get; private set; }
         public CustomerId CustomerId {get; private set; }
-        public readonly HashSet<LineItem> lineItems = new();
+        public Customer Customer { get; private set; }
+        public bool isFulfilled { get; set; } = false;
+
+        public readonly List<LineItem> lineItems = new();
 
         
         internal Cart(
@@ -34,9 +37,9 @@ namespace AlkinanaPharmaManagment.Domain.Entities
             return cart;
         }
 
-        public void AddItem(ProductId productId,Price price,uint quantity)
+        public void AddItem(ProductId productId,CartId cartId,int quantity)
         {
-            var lineItem = new LineItem(new LineItemId(Guid.NewGuid()), productId, CartId, price, quantity);
+            var lineItem = new LineItem(new LineItemId(Guid.NewGuid()), productId,cartId ,quantity);
             lineItems.Add(lineItem);
 
             Raise(new LineItemAdded(this, lineItem));
@@ -55,7 +58,7 @@ namespace AlkinanaPharmaManagment.Domain.Entities
         {
             foreach (var item in items)
             {
-                AddItem(item.productId, item.price, item.quantity);
+                AddItem(item.productId,item.cartId, item.quantity);
             }
         }
     }

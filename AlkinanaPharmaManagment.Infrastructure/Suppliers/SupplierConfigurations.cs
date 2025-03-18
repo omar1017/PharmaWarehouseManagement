@@ -8,14 +8,13 @@ namespace AlkinanaPharmaManagment.Infrastructure.Suppliers
     {
         public void Configure(EntityTypeBuilder<Supplier> builder)
         {
-            builder.HasKey(s => s.Id);
+            builder.HasKey(s => s.SupplierId);
 
-            builder.Property(s => s.Id)
+            builder.Property(s => s.SupplierId)
                    .HasConversion(
                        id => id.value,
                        value => new(value)
-                   )
-                   .HasColumnName("SupplierId");
+                   );
 
             builder.OwnsOne(s => s.SupplierAddress, Address => Address.Property(a => a.Value).HasColumnName("Address"));
             builder.OwnsOne(s => s.SupplierEmail, Email => Email.Property(a => a.Value).HasColumnName("Email"));
@@ -23,6 +22,8 @@ namespace AlkinanaPharmaManagment.Infrastructure.Suppliers
             builder.OwnsOne(s => s.SupplierLastName, LastName => LastName.Property(l => l.Value).HasColumnName("LastName"));
             builder.OwnsOne(s => s.SupplierName, Name => Name.Property(n => n.Value).HasColumnName("Name"));
             builder.OwnsOne(s => s.UserId, UserId => UserId.Property(n => n.Value).HasColumnName("UserId"));
+
+
         }
     }
 }

@@ -1,12 +1,5 @@
 ﻿using AlkinanaPharmaManagment.Application.Abstractions.Messaging;
-using AlkinanaPharmaManagment.Application.Customers.Get;
-using AlkinanaPharmaManagment.Domain.Repositories;
-using AlkinanaPharmaManagment.Shared.Abstraction.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AlkinanaPharmaManagment.Application.Carts.Get;
 
 namespace AlkinanaPharmaManagment.Application.Customers.GetById
 {
@@ -23,10 +16,10 @@ namespace AlkinanaPharmaManagment.Application.Customers.GetById
 
             var customerResponse = new CustomerResponse
             {
-                CustomerId = customer.CustomerId,
-                CustomerName = customer.customerName,
-                Pharma = customer.pharma,
-                Address = customer.address
+                Id = customer.Id,
+                Name = customer.Name,
+                PharmaName = customer.PharmaName,
+                Address = customer.Address,
             };
 
             return customerResponse;

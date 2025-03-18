@@ -18,6 +18,7 @@ namespace AlkinanaPharmaManagment.Application.Abstractions.Identity
         Task<bool> DeleteRole(string Id);
         Task<string> AssignRole(RoleAssign roleAssign);
         Task<List<AccountRepo>> GetAccountByRole(string role);
+        Task ConfirmAccount(Guid RepoId);
         string UserId {  get; }
     }
 }

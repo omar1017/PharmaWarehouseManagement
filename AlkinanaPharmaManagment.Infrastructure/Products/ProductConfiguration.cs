@@ -33,10 +33,7 @@ namespace AlkinanaPharmaManagment.Infrastructure.Products
                 pharma.Property(p => p.Value).HasColumnName("Supplier");
             });
 
-            builder.OwnsOne(c => c.image, image =>
-            {
-                image.Property(a => a.Value).HasColumnName("Image");
-            });
+           
 
             builder.OwnsOne(c => c.companyName, company =>
             {
@@ -52,11 +49,6 @@ namespace AlkinanaPharmaManagment.Infrastructure.Products
             {
                 price.Property(a => a.Value).HasColumnName("Price");
             });
-
-            builder.HasOne<Supplier>()
-                .WithMany()
-                .HasForeignKey(p => p.SupplierId);
-           
         }
     }
 }

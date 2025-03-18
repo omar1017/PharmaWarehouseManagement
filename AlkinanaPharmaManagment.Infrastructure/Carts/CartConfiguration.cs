@@ -22,11 +22,10 @@ namespace AlkinanaPharmaManagment.Infrastructure.Carts
                 value => new CartId(value));
 
             builder.HasMany(c => c.lineItems)
-                .WithOne()
-                .HasForeignKey(li => li.cartId);
-            builder.HasOne<Customer>()
-                .WithMany()
-                .HasForeignKey(c => c.CustomerId);
+                   .WithOne(li => li.Cart)
+                   .HasForeignKey(li => li.cartId);
+
+
 
             builder.Property(c => c.CustomerId)
                    .HasConversion(

@@ -10,13 +10,14 @@ namespace AlkinanaPharmaManagment.Domain.Entities.Suppliers
 {
     public class Supplier : AggregateRoot
     {
-        public SupplierId Id { get; private set; }
-        public UserId UserId { get; private set; }
-        public SupplierName SupplierName { get; private set; }
-        public SupplierFirstName SupplierFirstName { get; private set; }
-        public SupplierLastName SupplierLastName { get; private set; }
-        public SupplierEmail SupplierEmail { get; private set; }
-        public SupplierAddress SupplierAddress { get; private set; }
+        public SupplierId SupplierId { get;  set; }
+        public UserId UserId { get;  set; }
+        public SupplierName SupplierName { get;  set; }
+        public SupplierFirstName SupplierFirstName { get;  set; }
+        public SupplierLastName SupplierLastName { get;  set; }
+        public SupplierEmail SupplierEmail { get;  set; }
+        public SupplierAddress SupplierAddress { get;  set; }
+        public List<Product> Products { get; set; }
 
         public static Supplier CreateSupplier(
             UserId userId,
@@ -41,7 +42,7 @@ namespace AlkinanaPharmaManagment.Domain.Entities.Suppliers
 
         internal Supplier(SupplierId id, UserId userId, SupplierName supplierName, SupplierFirstName supplierFirstName, SupplierLastName supplierLastName, SupplierEmail supplierEmail, SupplierAddress supplierAddress)
         {
-            Id = id;
+            SupplierId = id;
             UserId = userId;
             SupplierName = supplierName;
             SupplierFirstName = supplierFirstName;

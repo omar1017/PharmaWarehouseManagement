@@ -6,7 +6,10 @@ using AlkinanaPharmaManagment.Infrastructure;
 using AlkinanaPharmaManagment.Infrastructure.Hubs;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    WebRootPath = "wwwroot"
+});
 
 // Add services to the container.
 
@@ -40,11 +43,13 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+app.UseStaticFiles();
 
 app.UseCors("AllowSpecificOrigins");
 

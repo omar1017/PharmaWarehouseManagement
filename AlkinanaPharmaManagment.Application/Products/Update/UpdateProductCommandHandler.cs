@@ -1,47 +1,85 @@
 ﻿using AlkinanaPharmaManagment.Application.Abstractions.Identity;
 using AlkinanaPharmaManagment.Application.Abstractions.Messaging;
-using AlkinanaPharmaManagment.Domain.Entities;
-using AlkinanaPharmaManagment.Domain.Repositories;
+using AlkinanaPharmaManagment.Application.Suppliers;
+using AlkinanaPharmaManagment.Domain.Entities.Products.Events;
+using AlkinanaPharmaManagment.Domain.Entities.Warnings;
 using AlkinanaPharmaManagment.Domain.ValueObject;
-using AlkinanaPharmaManagment.Shared.Abstraction.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace AlkinanaPharmaManagment.Application.Products.Update
 {
-    internal sealed class UpdateProductCommandHandler(IProductRepository productRepository, IUserService userService) : ICommandHandler<UpdateProductCommand, ProductId>
+    internal sealed class UpdateProductCommandHandler(IProductRepository productRepository, IUserService userService, ISupplierRepository supplierRepository) : ICommandHandler<UpdateProductCommand, ProductId>
     {
         public async Task<ProductId> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            Guid UpdatedBy = Guid.Parse(userService.UserId);
+            bool isAdmin = request.user.FindFirst(ClaimTypes.Role)?.Value == "Administrator";
+            string supplierName = "";
+            var userId = userService.UserId;
+            var supplier = await supplierRepository.GetSupplierByUserId(userId);
 
-            var product = await productRepository.GetAsync(request.Product.Id);
+            Guid UpdatedBy = Guid.Parse(userId);
 
-            var productUpdated = Product.CreateProductForUpdate(
-                    request.Product.Id,
-                    request.Product.name,
-                    request.Product.image,
-                    request.Product.companyName,
-                    request.Product.description,
-                    request.Product.price,
-                    request.Product.supplier,
-                    product.SupplierId,
-                    request.Product.isActive
-                );
-            productUpdated.ModifiedAt = DateTime.UtcNow;
-            productUpdated.UpdatedBy = UpdatedBy;
-            productUpdated.CreatedBy = product.CreatedBy;
-            productUpdated.CreatedAt = product.CreatedAt;
-            productUpdated.IsDeleted = product.IsDeleted;
+            Warning warning = null;
+             
+            var product = await productRepository.GetFullProductById(request.Id);
+
+            if (!string.IsNullOrEmpty(request.Product.supplier) && isAdmin)
+            {
+                supplierName = request.Product.supplier;
+            }
+            else
+            {
+                supplierName = supplier.SupplierName;
+            }
+
+
+            product.name = request.Product.name;
+            product.ImageId = request.Product.imageId;
+            product.companyName = request.Product.companyName;
+            product.description = request.Product.description;
+            product.price = request.Product.price;
+            product.supplier = supplierName;
+            product.Supplier = supplier;
+            product.Notes = request.Product.notes;      
+            product.ModifiedAt = DateTime.UtcNow;
+            product.UpdatedBy = UpdatedBy;
+            
+            if (isAdmin)
+            {
+                product.PublicPrice = request.Product.publicPrice;
+                product.Quantity = request.Product.quantity;
+                product.SName = request.Product.sName;
+                if (product.Warning is not null)
+                {
+                    product.Warning.Message = request.Product.message;
+                    product.Warning.ImageId = request.Product.imageId;
+                }
+            
+                else
+                {
+                    if (!string.IsNullOrEmpty(request.Product.message))
+                    {
+                        warning = new Warning
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageId = request.Product.imgId,
+                            Message = request.Product.message
+                        };
+
+                        await productRepository.AddWarning(warning);
+                        await productRepository.SaveChangeAsync();
+                    
+                    }
+                }
+                if (warning is not null)
+                    product.Warning = await productRepository.GetWarningById(warning.Id);
+            }
            
-            await productRepository.UpdateAsync(product);
+            product.Raise(new ProductUpdatedEvent(product));
 
             await productRepository.SaveChangeAsync();
 
-            return request.Product.Id;
+            return request.Id;
         }
     }
 }

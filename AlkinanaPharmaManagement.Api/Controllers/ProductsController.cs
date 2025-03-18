@@ -1,6 +1,9 @@
-﻿using AlkinanaPharmaManagment.Application.Products.Create;
+﻿using AlkinanaPharmaManagment.Application.Products;
+using AlkinanaPharmaManagment.Application.Products.Active;
+using AlkinanaPharmaManagment.Application.Products.Create;
 using AlkinanaPharmaManagment.Application.Products.Delete;
 using AlkinanaPharmaManagment.Application.Products.Get;
+using AlkinanaPharmaManagment.Application.Products.GetAllProduct;
 using AlkinanaPharmaManagment.Application.Products.GetByCompany;
 using AlkinanaPharmaManagment.Application.Products.GetById;
 using AlkinanaPharmaManagment.Application.Products.GetByName;
@@ -13,7 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AlkinanaPharmaManagement.Api.Controllers;
 
-[Authorize(Roles = "Administrator")]
+//[Authorize(Roles = "Administrator")]
 [Route("api/[controller]")]
 [ApiController]
 public class ProductsController : ControllerBase
@@ -24,36 +27,47 @@ public class ProductsController : ControllerBase
     {
         this.sender = sender;
     }
-
+    [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetProducts() => Ok(await sender.Send(new GetProductsQuery()));
+    public async Task<IActionResult> GetProducts([FromQuery] ProductSearchRequest request) =>
+        Ok(await sender.Send(new GetProductsQuery(request, User)));
 
+    [AllowAnonymous]
+    [HttpGet("all")]
+    public async Task<IActionResult> GetActiveProducts([FromQuery] ProductSearchRequest request) =>
+        Ok(await sender.Send(new GetAllProductQuery(request)));
+
+    [Authorize(Roles = "Administrator")]
     [HttpGet("{Id}")]
-    public async Task<IActionResult> GetProductById(Guid Id) => Ok(await sender.Send(new GetProductByIdQuery(Id)));
+    public async Task<IActionResult> GetProductById(Guid Id) => 
+        Ok(await sender.Send(new GetProductByIdQuery(Id)));
 
-    [HttpGet("company/{company}")]
-    public async Task<IActionResult> GetProductsByCompany(string company) => Ok(await sender.Send(new GetProductsByCompanyQuery(company)));
-
-    [HttpGet("name/{name}")]
-    public async Task<IActionResult> GetProductsByName(string name) => Ok(await sender.Send(new GetProductsByNameQuery(name)));
-
-    [HttpGet("supplier/{supplier}")]
-    public async Task<IActionResult> GetProductsBySupplier(string supplier) => Ok(await sender.Send(new GetProductsBySupplierQuery(supplier)));
-
+    [Authorize(Roles = "Administrator, CustomerAccount")]
     [HttpPost]
-    public async Task<IActionResult> CreateProduct([FromForm] ProductRequest request) => CreatedAtAction(nameof(CreateProduct), new { Id = await sender.Send(new CreateProductCommand(request)) });
+    public async Task<IActionResult> CreateProduct([FromForm]ProductRequest request) => 
+        CreatedAtAction(nameof(CreateProduct), new { Id = await sender.Send(new CreateProductCommand(request,User)) });
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateProduct([FromForm]ProductUpdate product)
+    [Authorize(Roles = "Administrator, CustomerAccount")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProduct(Guid id,[FromForm]ProductUpdate product)
     {
-        await sender.Send(new UpdateProductCommand(product));
+        await sender.Send(new UpdateProductCommand(id,product,User));
         return NoContent();
     }
 
+    [Authorize(Roles = "Administrator, CustomerAccount")]
     [HttpDelete("{Id}")]
     public async Task<IActionResult> DeleteProduct(Guid Id)
     {
         await sender.Send(new DeleteProductCommand(Id));
+        return NoContent();
+    }
+
+    [Authorize(Roles = "Administrator")]
+    [HttpPut("Active/{Id}")]
+    public async Task<IActionResult> ActiveProduct(Guid Id)
+    {
+        await sender.Send(new ActiveProductCommand(Id));
         return NoContent();
     }
 }

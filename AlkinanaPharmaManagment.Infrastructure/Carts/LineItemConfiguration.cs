@@ -1,4 +1,5 @@
 ﻿using AlkinanaPharmaManagment.Domain.Entities;
+using AlkinanaPharmaManagment.Domain.Entities.Carts.ValueObject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -20,11 +21,12 @@ namespace AlkinanaPharmaManagment.Infrastructure.Carts
                     linItemId => linItemId.Value,
                     value => new LineItemId(value));
 
-            builder.Property(li => li.price).HasConversion(price => price.Value, value => new Domain.Entities.Products.ValueObject.Price(value));
+            builder.Property(li => li.cartId).HasConversion(
+                    cartId => cartId.Value,
+                    value => new CartId(value));
 
-            builder.HasOne<Product>()
-                .WithMany()
-                .HasForeignKey(li => li.productId);
+
+            
 
             builder.Property(li => li.productId).HasConversion(productId => productId.Value, value => new Domain.ValueObject.ProductId(value));
         }

@@ -1,4 +1,5 @@
-﻿using AlkinanaPharmaManagment.Domain.Entities;
+﻿using AlkinanaPharmaManagment.Application.Products.Get;
+using AlkinanaPharmaManagment.Domain.Entities;
 using AlkinanaPharmaManagment.Domain.Entities.Carts.ValueObject;
 using AlkinanaPharmaManagment.Domain.Entities.Customers;
 using System;
@@ -12,7 +13,9 @@ namespace AlkinanaPharmaManagment.Application.Carts.Get
     public sealed class CartResponse
     {
         public CartId CartId { get; set; }
-        public Customer Customer { get; set; }
-        public HashSet<LineItem> LineItems { get; set; } = new();
+        public bool isFulfilled { get; set; }
+        public CustomerResponse Customer { get; set; }
+        public List<LineItemResponse> products { get; set; } = new();
+        public DateTime? DateCreated { get; set; }
     }
 }

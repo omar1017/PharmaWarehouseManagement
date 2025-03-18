@@ -1,6 +1,8 @@
 ﻿using AlkinanaPharma.Identity.Models;
 using AlkinanaPharmaManagment.Application.Abstractions.Identity;
+using AlkinanaPharmaManagment.Application.Exceptions;
 using AlkinanaPharmaManagment.Application.Models.Identity;
+using AlkinanaPharmaManagment.Application.Suppliers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +16,21 @@ public class UserService : IUserService
     private readonly UserManager<ApplicationUser> userManager;
     private readonly RoleManager<IdentityRole> roleManager;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly ISupplierRepository supplierRepository;
 
     public string UserId {  get; private set; }
 
     public UserService(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IHttpContextAccessor httpContextAccessor
+        IHttpContextAccessor httpContextAccessor,
+        ISupplierRepository supplierRepository
         )
     {
         this.userManager = userManager;
         this.roleManager = roleManager;
         this.httpContextAccessor = httpContextAccessor;
+        this.supplierRepository = supplierRepository;
         SetId();
     }
     
@@ -186,9 +191,23 @@ public class UserService : IUserService
             // جلب الـ ID باستخدام الـ Claim الصحيح
             UserId = context.User.FindFirstValue("uid");
         }
-
-
     }
 
-   
+    public async Task ConfirmAccount(Guid RepoId)
+    {
+        var supplier = await supplierRepository.GetSupplierByUserId(RepoId.ToString());
+
+        var user = await userManager.FindByIdAsync(RepoId.ToString());
+        if (user is null)
+        {
+            throw new NotFoundException(nameof(user), RepoId);
+        }
+
+        supplier.IsDeleted = !supplier.IsDeleted;
+
+        user.EmailConfirmed = !user.EmailConfirmed;
+
+        await supplierRepository.SaveChangeAsync();
+        await userManager.UpdateAsync(user);
+    }
 }

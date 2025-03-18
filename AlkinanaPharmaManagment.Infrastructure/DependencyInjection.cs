@@ -1,20 +1,19 @@
-﻿using AlkinanaPharmaManagment.Application.Abstractions.DriveServices;
-using AlkinanaPharmaManagment.Application.Abstractions.Email;
+﻿using AlkinanaPharmaManagment.Application.Abstractions.Email;
 using AlkinanaPharmaManagment.Application.Abstractions.HubServices;
+using AlkinanaPharmaManagment.Application.Abstractions.UploadFiles;
+using AlkinanaPharmaManagment.Application.Carts;
+using AlkinanaPharmaManagment.Application.Customers;
 using AlkinanaPharmaManagment.Application.Models.Email;
-using AlkinanaPharmaManagment.Domain.Repositories;
+using AlkinanaPharmaManagment.Application.Products;
+using AlkinanaPharmaManagment.Application.Suppliers;
 using AlkinanaPharmaManagment.Infrastructure.Database;
-using AlkinanaPharmaManagment.Infrastructure.DriveServices;
 using AlkinanaPharmaManagment.Infrastructure.EmailService;
+using AlkinanaPharmaManagment.Infrastructure.FileStorage;
 using AlkinanaPharmaManagment.Infrastructure.Hubs;
 using AlkinanaPharmaManagment.Infrastructure.Repositoryies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 
 
@@ -26,6 +25,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration) =>
         services
+            .AddStorage()
             .AddDatabase(configuration)
             //.AddAuthenticationInternal(configuration)
             .AddAuthorizationInternal()
@@ -36,6 +36,12 @@ public static class DependencyInjection
     {
         services.AddSignalR();
         services.AddScoped(typeof(IRaiseMethod<>), typeof(RaiseMethod<>));
+        return services;
+    }
+
+    private static IServiceCollection AddStorage(this IServiceCollection services)
+    {
+        services.AddScoped<IFileStorage, LocalStorage>();
         return services;
     }
 
@@ -57,7 +63,6 @@ public static class DependencyInjection
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
-        services.AddScoped<IDriveServices, DriveServiceImage>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
 
         return services;

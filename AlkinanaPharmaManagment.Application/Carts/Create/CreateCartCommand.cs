@@ -12,7 +12,8 @@ using System.Windows.Input;
 namespace AlkinanaPharmaManagment.Application.Carts
 {
     public record CreateCartCommand(CartRequest cartRequest) : ICommand<CartId>;
-    public record CartRequest(CustomerId CustomerId, List<LineItem> LineItems);
+    public record CartRequest(string pharmaName, string name, string phone, string address, List<Item> items);
+    public record Item(Guid productId,int quantity);
 
 }
 

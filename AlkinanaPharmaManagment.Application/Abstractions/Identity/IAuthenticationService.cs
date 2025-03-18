@@ -13,4 +13,5 @@ public interface IAuthenticationService
 {
     Task<AuthenticationResponse> LogIn(AuthenticationRequest request);
     Task<RegistrationResponse> Register(RegistrationRequest request);
+    public Task<AuthenticationResponse> RefreshTokenAsync(string token, string refreshToken);
 }

@@ -14,7 +14,6 @@ namespace AlkinanaPharmaManagment.Application.Products.Update
             RuleFor(c => c.Product.name).NotEmpty();
             RuleFor(c => c.Product.description).NotEmpty();
             RuleFor(c => c.Product.price).NotEmpty();
-            RuleFor(c => c.Product.image).NotEmpty();
             RuleFor(c => c.Product.supplier).NotEmpty();
             RuleFor(c => c.Product.companyName).NotEmpty();
         }
