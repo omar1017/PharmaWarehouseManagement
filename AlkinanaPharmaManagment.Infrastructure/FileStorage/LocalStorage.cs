@@ -42,7 +42,7 @@ namespace AlkinanaPharmaManagment.Infrastructure.FileStorage
             var image = new Image
             {
                 Id = Guid.NewGuid(),
-                Url = $"http://localhost:5078/uploads/{fileName}"
+                Url = $"https://alkinanamedstore.com/uploads/{fileName}"
             };
 
             context.Images.Add(image);

@@ -1,9 +1,12 @@
 using AlkinanaPharma.Identity;
+using AlkinanaPharma.Identity.DBContext;
 using AlkinanaPharmaManagement.Api;
 using AlkinanaPharmaManagement.Api.Middlewares;
 using AlkinanaPharmaManagment.Application;
 using AlkinanaPharmaManagment.Infrastructure;
+using AlkinanaPharmaManagment.Infrastructure.Database;
 using AlkinanaPharmaManagment.Infrastructure.Hubs;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
@@ -30,7 +33,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("https//www.alkinanamedstore.com")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -38,6 +41,18 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AlkinanaPharmaIdentityDbContext>();
+    dbContext.Database.Migrate();
+}
 
 app.UseMiddleware<ExceptionMiddleware>();
 

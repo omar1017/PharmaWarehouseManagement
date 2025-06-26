@@ -15,7 +15,7 @@ namespace AlkinanaPharmaManagment.Application.Products.Create
         public async Task<ProductId> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
             var userId = request.user.FindFirst("uid")?.Value;
-            var user = userService.get
+           
             var isAdmin = request.user.FindFirst(ClaimTypes.Role)?.Value == "Administrator";
             Warning warning = null;
             bool isActive = false;
